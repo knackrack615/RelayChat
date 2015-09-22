@@ -30,33 +30,41 @@ public Plugin:myinfo = {
 public OnPluginStart() {	
 	PrintToServer("Plugin RelayChat Loaded!");
 	LoadTranslations("sourceirc.phrases");
+}
+
+public OnAllPluginsLoaded() {
+	if (LibraryExists("sourceirc"))
+	IRC_Loaded();
+}
+
+public OnLibraryAdded(const String:name[]) {
+	if (StrEqual(name, "sourceirc"))
+	IRC_Loaded();
+}
+
+public OnLibraryRemoved(const String:name[]) {
+	if (StrEqual(name, "sourceirc")) {
+	RemoveCommandListener(Command_Say, "say");
+	RemoveCommandListener(Command_Say, "say2");
+	RemoveCommandListener(Command_Say, "say_team");
+	}
+}
+
+IRC_Loaded() {
+	IRC_CleanUp(); // Call IRC_CleanUp as this function can be called more than once.
 	AddCommandListener(Command_Say, "say");
 	AddCommandListener(Command_Say, "say2");
 	AddCommandListener(Command_Say, "say_team");
 }
 
-public OnAllPluginsLoaded() {
-	if (LibraryExists("sourceirc"))
-		IRC_Loaded();
-}
-
-public OnLibraryAdded(const String:name[]) {
-	if (StrEqual(name, "sourceirc"))
-		IRC_Loaded();
-}
-
-IRC_Loaded() {
-	IRC_CleanUp(); // Call IRC_CleanUp as this function can be called more than once.
-}
-
 public Action:Command_Say(client, const String:command[], argc) {
-        decl String:text[64];
-        GetCmdArg(1, text, sizeof(text));
+	decl String:text[192];
 	decl String:name[64];
 	decl String:finalmsg[64];
+        GetCmdArg(1, text, sizeof(text));
+	if(strlen(text) < 1) { return Plugin_Handled; }
 	GetClientName(client, name, sizeof(name));
 	Format(finalmsg, sizeof(finalmsg), "[Server] %s > %s", name, text);
-	if(strlen(text) < 1) { return Plugin_Handled; }
 	IRC_MsgFlaggedChannels("relay", finalmsg)
         return Plugin_Continue;
 }
