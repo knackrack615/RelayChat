@@ -23,12 +23,12 @@ public Plugin:myinfo = {
 	name = "SourceIRC -> Relay Chat",
 	author = "Knackrack615",
 	description = "Relays Chat",
-	version = IRC_VERSION,
+	version = "3.0",
 	url = "http://hgcommunity.net"
 };
 
 public OnPluginStart() {	
-	PrintToServer("Plugin RelayChat Loaded!");
+	PrintToServer("Plugin SourceIRC -> Relay Chat Loaded!");
 	LoadTranslations("sourceirc.phrases");
 }
 
@@ -60,7 +60,7 @@ IRC_Loaded() {
 public Action:Command_Say(client, const String:command[], argc) {
 	decl String:text[192];
 	decl String:name[64];
-	decl String:finalmsg[64];
+	decl String:finalmsg[IRC_MAXLEN];
         GetCmdArg(1, text, sizeof(text));
 	if(strlen(text) < 1) { return Plugin_Handled; }
 	GetClientName(client, name, sizeof(name));
